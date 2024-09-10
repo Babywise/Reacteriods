@@ -13,6 +13,7 @@ const KEY = {
   D: 68,
   W: 87,
   SPACE: 32,
+  MDOWN: 0,
 };
 
 export class Reacteroids extends Component {
@@ -55,11 +56,19 @@ export class Reacteroids extends Component {
 
   handleKeys(value, e) {
     let keys = this.state.keys;
-    if (e.keyCode === KEY.LEFT || e.keyCode === KEY.A) keys.left = value;
-    if (e.keyCode === KEY.RIGHT || e.keyCode === KEY.D) keys.right = value;
-    if (e.keyCode === KEY.UP || e.keyCode === KEY.W) keys.up = value;
-    if (e.keyCode === KEY.DOWN || e.keyCode === KEY.S) keys.down = value;
-    if (e.keyCode === KEY.SPACE) keys.space = value;
+
+    // Handle keyboard mechanics
+    if (e.type === "keydown" || e.type === "keyup") {
+      if (e.keyCode === KEY.LEFT || e.keyCode === KEY.A) keys.left = value;
+      if (e.keyCode === KEY.RIGHT || e.keyCode === KEY.D) keys.right = value;
+      if (e.keyCode === KEY.UP || e.keyCode === KEY.W) keys.up = value;
+      if (e.keyCode === KEY.SPACE) keys.space = value;
+    }
+
+    // Handle mouse mechanics
+    if (e.type === "mousedown" && e.button === KEY.MDOWN) keys.space = true;
+    if (e.type === "mouseup" && e.button === KEY.MDOWN) keys.space = false;
+
     this.setState({
       keys: keys,
     });
@@ -68,6 +77,8 @@ export class Reacteroids extends Component {
   componentDidMount() {
     window.addEventListener("keyup", this.handleKeys.bind(this, false));
     window.addEventListener("keydown", this.handleKeys.bind(this, true));
+    window.addEventListener("mousedown", this.handleKeys.bind(this, true));
+    window.addEventListener("mouseup", this.handleKeys.bind(this, false));
     window.addEventListener("resize", this.handleResize.bind(this, false));
 
     const context = this.refs.canvas.getContext("2d");
@@ -79,9 +90,11 @@ export class Reacteroids extends Component {
   }
 
   componentWillUnmount() {
-    window.removeEventListener("keyup", this.handleKeys);
-    window.removeEventListener("keydown", this.handleKeys);
-    window.removeEventListener("resize", this.handleResize);
+    window.removeEventListener("keyup", this.handleKeys.bind(this, false));
+    window.removeEventListener("keydown", this.handleKeys.bind(this, true));
+    window.removeEventListener("mousedown", this.handleKeys.bind(this, true));
+    window.removeEventListener("mouseup", this.handleKeys.bind(this, false));
+    window.removeEventListener("resize", this.handleResize.bind(this, false));
   }
 
   update() {
