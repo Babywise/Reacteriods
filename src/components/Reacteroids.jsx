@@ -37,6 +37,7 @@ export class Reacteroids extends Component {
       currentScore: 0,
       topScore: localStorage["topscore"] || 0,
       inGame: false,
+      menu: true,
     };
     this.ship = [];
     this.asteroids = [];
@@ -84,7 +85,19 @@ export class Reacteroids extends Component {
 
     const context = this.refs.canvas.getContext("2d");
     this.setState({ context: context });
-    this.startGame();
+    this.showMenu();
+
+    // Make ship
+    let ship = new Ship({
+      position: {
+        x: this.state.screen.width / 2,
+        y: this.state.screen.height / 2,
+      },
+      create: this.createObject.bind(this),
+      onDie: this.gameOver.bind(this),
+    });
+    this.createObject(ship, "ship");
+
     requestAnimationFrame(() => {
       this.update();
     });
@@ -145,9 +158,17 @@ export class Reacteroids extends Component {
     }
   }
 
+  showMenu() {
+    this.setState({
+      menu: true,
+      inGame: false,
+    });
+  }
+
   startGame() {
     this.setState({
       inGame: true,
+      menu: false,
       currentScore: 0,
     });
 
@@ -170,6 +191,7 @@ export class Reacteroids extends Component {
   gameOver() {
     this.setState({
       inGame: false,
+      gameOver: true,
     });
 
     // Replace top score
@@ -267,6 +289,7 @@ export class Reacteroids extends Component {
 
   render() {
     let endgame;
+    let menu;
     let message;
 
     if (this.state.currentScore <= 0) {
@@ -278,23 +301,45 @@ export class Reacteroids extends Component {
     }
 
     if (!this.state.inGame) {
-      endgame = (
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 p-16 z-1 text-center">
-          <p>Game over, man!</p>
-          <p>{message}</p>
-          <button
-            className="border-4 border-white bg-transparent text-white text-m px-10 py-5 m-5 cursor-pointer hover:bg-white hover:text-black"
-            onClick={this.startGame.bind(this)}
-          >
-            try again?
-          </button>
-        </div>
-      );
+      if (this.state.menu) {
+        menu = (
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 p-16 z-1 text-center">
+            <p>Reacteroids</p>
+            <p>Shoot the asteriods!</p>
+            <p>Don't get hit!</p>
+            <button
+              className="border-4 border-white bg-transparent text-white text-m px-10 py-5 m-5 cursor-pointer hover:bg-white hover:text-black"
+              onClick={this.startGame.bind(this)}
+            >
+              Start
+            </button>
+          </div>
+        );
+      } else {
+        endgame = (
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 p-16 z-1 text-center">
+            <p>Game over, man!</p>
+            <p>{message}</p>
+            <button
+              className="border-4 border-white bg-transparent text-white text-m px-10 py-5 m-5 cursor-pointer hover:bg-white hover:text-black"
+              onClick={() => this.setState({ menu: true })}
+            >
+              Menu
+            </button>
+            <button
+              className="border-4 border-white bg-transparent text-white text-m px-10 py-5 m-5 cursor-pointer hover:bg-white hover:text-black"
+              onClick={this.startGame.bind(this)}
+            >
+              try again?
+            </button>
+          </div>
+        );
+      }
     }
 
     return (
       <div>
-        {endgame}
+        {endgame ?? menu ?? ""}
         <span className="block absolute top-15 z-1 text-sm left-20">
           Score: {this.state.currentScore}
         </span>
