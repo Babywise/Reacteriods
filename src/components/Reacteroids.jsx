@@ -86,18 +86,6 @@ export class Reacteroids extends Component {
     const context = this.refs.canvas.getContext("2d");
     this.setState({ context: context });
     this.showMenu();
-
-    // Make ship
-    let ship = new Ship({
-      position: {
-        x: this.state.screen.width / 2,
-        y: this.state.screen.height / 2,
-      },
-      create: this.createObject.bind(this),
-      onDie: this.gameOver.bind(this),
-    });
-    this.createObject(ship, "ship");
-
     requestAnimationFrame(() => {
       this.update();
     });
@@ -213,14 +201,14 @@ export class Reacteroids extends Component {
           x: randomNumBetweenExcluding(
             0,
             this.state.screen.width,
-            ship.position.x - 60,
-            ship.position.x + 60
+            (ship?.position?.x ?? 0) - 60,
+            (ship?.position?.x ?? 0) + 60
           ),
           y: randomNumBetweenExcluding(
             0,
             this.state.screen.height,
-            ship.position.y - 60,
-            ship.position.y + 60
+            (ship?.position?.y ?? 0) - 60,
+            (ship?.position?.y ?? 0) + 60
           ),
         },
         create: this.createObject.bind(this),
