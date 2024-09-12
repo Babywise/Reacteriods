@@ -200,7 +200,6 @@ export class Reacteroids extends Component {
       onDie: this.gameOver.bind(this),
       fireRate: localStorage.getItem("fireRate"),
     });
-    console.log(ship);
     this.createObject(ship, "ship");
 
     // Make asteroids

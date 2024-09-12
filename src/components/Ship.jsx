@@ -107,7 +107,6 @@ export default class Ship {
     if (state.keys.down) {
       this.accelerate(-0.5);
     }
-    console.log(this.fireRate);
     if (state.keys.space && Date.now() - this.lastShot > this.fireRate) {
       const bullet = new Bullet({ ship: this });
       this.create(bullet, "bullets");
