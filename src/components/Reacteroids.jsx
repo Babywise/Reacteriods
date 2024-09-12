@@ -3,6 +3,7 @@ import Ship from "./Ship";
 import Asteroid from "./Asteroid";
 import { randomNumBetweenExcluding } from "../utils/functions";
 import ColorPicker from "./ColorPicker";
+import BulletSpeedPicker from "./BulletSpeedPicker";
 
 const KEY = {
   LEFT: 37,
@@ -39,6 +40,7 @@ export class Reacteroids extends Component {
       topScore: localStorage["topscore"] || 0,
       inGame: false,
       menu: true,
+      settings: false,
       frameCount: 0,
       mousePosition: {
         x: 0,
@@ -196,7 +198,9 @@ export class Reacteroids extends Component {
       },
       create: this.createObject.bind(this),
       onDie: this.gameOver.bind(this),
+      fireRate: localStorage.getItem("fireRate"),
     });
+    console.log(ship);
     this.createObject(ship, "ship");
 
     // Make asteroids
@@ -307,6 +311,7 @@ export class Reacteroids extends Component {
     let endgame;
     let menu;
     let message;
+    let settings;
 
     if (this.state.currentScore <= 0) {
       message = "0 points... So sad.";
@@ -323,16 +328,42 @@ export class Reacteroids extends Component {
             <p>Reacteroids</p>
             <p>Shoot the asteriods!</p>
             <p>Don't get hit!</p>
-            <ColorPicker
-              onColorChange={(color) => {
-                localStorage["selectedTrailColor"] = color;
-              }}
-            />
+            <button
+              className="border-4 border-white bg-transparent text-white text-m px-10 py-5 m-5 cursor-pointer hover:bg-white hover:text-black"
+              onClick={() => this.setState({ menu: false, settings: true })}
+            >
+              Settings
+            </button>
             <button
               className="border-4 border-white bg-transparent text-white text-m px-10 py-5 m-5 cursor-pointer hover:bg-white hover:text-black"
               onClick={this.startGame.bind(this)}
             >
               Start
+            </button>
+          </div>
+        );
+      } else if (this.state.settings) {
+        settings = (
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 p-16 z-1 text-center">
+            <p>Settings</p>
+            <p>Customize your game</p>
+            <div className="">
+              <ColorPicker
+                onColorChange={(color) => {
+                  localStorage["selectedTrailColor"] = color;
+                }}
+              />
+              <BulletSpeedPicker
+                onFireRateChange={(newRate) =>
+                  localStorage.setItem("fireRate", newRate)
+                }
+              />
+            </div>
+            <button
+              className="border-4 border-white bg-transparent text-white text-m px-10 py-5 m-5 cursor-pointer hover:bg-white hover:text-black"
+              onClick={() => this.setState({ menu: true, settings: false })}
+            >
+              Back
             </button>
           </div>
         );
@@ -360,7 +391,7 @@ export class Reacteroids extends Component {
 
     return (
       <div>
-        {endgame ?? menu ?? ""}
+        {endgame ?? menu ?? settings ?? ""}
         <span className="block absolute top-15 z-1 text-sm left-20">
           Score: {this.state.currentScore}
         </span>
