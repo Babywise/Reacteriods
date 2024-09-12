@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import Ship from "./Ship";
 import Asteroid from "./Asteroid";
 import { randomNumBetweenExcluding } from "../utils/functions";
+import ColorPicker from "./ColorPicker";
 
 const KEY = {
   LEFT: 37,
@@ -38,6 +39,7 @@ export class Reacteroids extends Component {
       topScore: localStorage["topscore"] || 0,
       inGame: false,
       menu: true,
+      frameCount: 0,
       mousePosition: {
         x: 0,
         y: 0,
@@ -155,6 +157,10 @@ export class Reacteroids extends Component {
     context.restore();
 
     // Next frame
+    this.setState({
+      frameCount: (this.state.frameCount + 1) % 10000,
+    });
+
     requestAnimationFrame(() => {
       this.update();
     });
@@ -317,6 +323,11 @@ export class Reacteroids extends Component {
             <p>Reacteroids</p>
             <p>Shoot the asteriods!</p>
             <p>Don't get hit!</p>
+            <ColorPicker
+              onColorChange={(color) => {
+                localStorage["selectedTrailColor"] = color;
+              }}
+            />
             <button
               className="border-4 border-white bg-transparent text-white text-m px-10 py-5 m-5 cursor-pointer hover:bg-white hover:text-black"
               onClick={this.startGame.bind(this)}
