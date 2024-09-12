@@ -67,16 +67,18 @@ export default class Ship {
       ((this.rotation - 180) * Math.PI) / 180
     );
     const particle = new Particle({
-      lifeSpan: randomNumBetween(20, 40),
-      size: randomNumBetween(1, 3),
+      lifeSpan: randomNumBetween(50, 150),
+      size: randomNumBetween(1, 35),
       position: {
-        x: this.position.x + posDelta.x + randomNumBetween(-2, 2),
-        y: this.position.y + posDelta.y + randomNumBetween(-2, 2),
+        x: this.position.x + posDelta.x + randomNumBetween(-10, 10),
+        y: this.position.y + posDelta.y + randomNumBetween(-10, 10),
       },
       velocity: {
         x: posDelta.x / randomNumBetween(3, 5),
         y: posDelta.y / randomNumBetween(3, 5),
       },
+      color: localStorage.getItem("selectedTrailColor"),
+      rainbow: localStorage.getItem("rainbow") === "true" ? true : false,
     });
     this.create(particle, "particles");
   }
