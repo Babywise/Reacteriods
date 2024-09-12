@@ -45,12 +45,21 @@ export default class Ship {
     }
   }
 
-  rotate(dir) {
-    if (dir == "LEFT") {
-      this.rotation -= this.rotationSpeed;
-    }
-    if (dir == "RIGHT") {
-      this.rotation += this.rotationSpeed;
+  rotate(dir, mousePosition) {
+    const dx = mousePosition?.x - this.position.x;
+    const dy = mousePosition?.y - this.position.y;
+    switch (dir) {
+      case "LEFT":
+        this.rotation -= this.rotationSpeed;
+        break;
+      case "RIGHT":
+        this.rotation += this.rotationSpeed;
+        break;
+      case "MOUSE":
+        this.rotation = (Math.atan2(dy, dx) * 180) / Math.PI + 90;
+        break;
+      default:
+        break;
     }
   }
 
@@ -102,20 +111,15 @@ export default class Ship {
       this.create(bullet, "bullets");
       this.lastShot = Date.now();
     }
+    if (state.mousePosition.movedRecently) {
+      this.rotate("MOUSE", state.mousePosition);
+    }
 
     // Move
     this.position.x += this.velocity.x;
     this.position.y += this.velocity.y;
     this.velocity.x *= this.inertia;
     this.velocity.y *= this.inertia;
-
-    // Rotation
-    if (this.rotation >= 360) {
-      this.rotation -= 360;
-    }
-    if (this.rotation < 0) {
-      this.rotation += 360;
-    }
 
     // Screen edges
     if (this.position.x > state.screen.width) this.position.x = 0;

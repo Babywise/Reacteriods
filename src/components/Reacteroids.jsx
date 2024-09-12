@@ -40,6 +40,11 @@ export class Reacteroids extends Component {
       inGame: false,
       menu: true,
       frameCount: 0,
+      mousePosition: {
+        x: 0,
+        y: 0,
+        movedRecently: false,
+      },
     };
     this.ship = [];
     this.asteroids = [];
@@ -78,12 +83,22 @@ export class Reacteroids extends Component {
     });
   }
 
+  handleMouseMove(e) {
+    const mousePosition = {
+      x: e.clientX,
+      y: e.clientY,
+      movedRecently: true,
+    };
+    this.setState({ mousePosition });
+  }
+
   componentDidMount() {
     window.addEventListener("keyup", this.handleKeys.bind(this, false));
     window.addEventListener("keydown", this.handleKeys.bind(this, true));
     window.addEventListener("mousedown", this.handleKeys.bind(this, true));
     window.addEventListener("mouseup", this.handleKeys.bind(this, false));
     window.addEventListener("resize", this.handleResize.bind(this, false));
+    window.addEventListener("mousemove", this.handleMouseMove.bind(this));
 
     const context = this.refs.canvas.getContext("2d");
     this.setState({ context: context });
@@ -99,6 +114,7 @@ export class Reacteroids extends Component {
     window.removeEventListener("mousedown", this.handleKeys.bind(this, true));
     window.removeEventListener("mouseup", this.handleKeys.bind(this, false));
     window.removeEventListener("resize", this.handleResize.bind(this, false));
+    window.removeEventListener("mousemove", this.handleResize.bind(this));
   }
 
   update() {
@@ -132,6 +148,12 @@ export class Reacteroids extends Component {
     this.updateObjects(this.bullets, "bullets");
     this.updateObjects(this.ship, "ship");
 
+    // Reset mouse moved recently
+    if (this.state.mousePosition.movedRecently) {
+      this.setState({
+        mousePosition: { movedRecently: false },
+      });
+    }
     context.restore();
 
     // Next frame
