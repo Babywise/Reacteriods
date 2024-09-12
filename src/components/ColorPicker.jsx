@@ -10,19 +10,15 @@ function isDarkColor(color) {
   return brightness < 128;
 }
 
-class ColorPicker extends Component {
+export default class ColorPicker extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      selectedTrailColor:
-        localStorage.getItem("selectedTrailColor") ?? "#ffffff",
       showColorPicker: false,
-      rainbow: localStorage.getItem("rainbow") === "true" ? true : false,
     };
   }
 
   handleColorChange = (color) => {
-    this.setState({ selectedTrailColor: color });
     if (this.props.onColorChange) {
       this.props.onColorChange(color);
     }
@@ -35,29 +31,25 @@ class ColorPicker extends Component {
   };
 
   toggleRainbow = (isChecked) => {
-    if (isChecked) {
-      localStorage.setItem("rainbow", "true");
-      this.setState({ rainbow: true });
-    } else {
-      localStorage.setItem("rainbow", "false");
-      localStorage.setItem("selectedTrailColor", this.state.selectedTrailColor);
-      this.setState({ rainbow: false });
+    if (this.props.onToggleRainbow) {
+      this.props.onToggleRainbow(isChecked);
     }
   };
 
   render() {
-    const isDark = isDarkColor(this.state.selectedTrailColor) ? "invert" : "";
+    const { selectedColor, rainbow } = this.props;
+    const isDark = isDarkColor(selectedColor) ? "invert" : "";
     return (
       <div className="flex flex-row items-center justify-between w-full">
         {/* Button to toggle the color picker */}
         <button
           className="border-4 border-white text-m px-10 py-5 m-5 cursor-pointer hover:bg-white hover:text-black flex-grow"
           style={{
-            background: this.state.rainbow
+            background: rainbow
               ? "linear-gradient(to right, red, orange, yellow, green, blue, indigo, violet)"
-              : this.state.selectedTrailColor,
-            color: this.state.rainbow ? "black" : isDark ? "white" : "black",
-            textShadow: this.state.rainbow
+              : selectedColor,
+            color: rainbow ? "black" : isDark ? "white" : "black",
+            textShadow: rainbow
               ? "0px 0px 4px black"
               : isDark
               ? "0px 0px 4px white"
@@ -72,10 +64,7 @@ class ColorPicker extends Component {
         {this.state.showColorPicker && (
           <div className="mt-5 flex-grow">
             <HexColorPicker
-              color={
-                localStorage.getItem("selectedTrailColor") ??
-                this.state.selectedTrailColor
-              }
+              color={this.props.selectedColor}
               onChange={this.handleColorChange}
             />
           </div>
@@ -87,7 +76,7 @@ class ColorPicker extends Component {
             <span className="text-white mr-2">Rainbow</span>
             <input
               type="checkbox"
-              checked={this.state.rainbow}
+              checked={rainbow}
               onChange={(e) => {
                 this.toggleRainbow(e.target.checked);
               }}
@@ -98,5 +87,3 @@ class ColorPicker extends Component {
     );
   }
 }
-
-export default ColorPicker;
