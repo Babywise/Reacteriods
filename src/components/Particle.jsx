@@ -33,9 +33,6 @@ export default class Particle {
       this.destroy();
     }
 
-    // Fade out
-    const alpha = Math.max(0, 1 - (100 - this.lifeSpan) / 100);
-
     // Set Color
     // Variables to control the sine wave for each color component
     // Color changing speed

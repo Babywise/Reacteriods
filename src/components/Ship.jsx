@@ -17,6 +17,7 @@ export default class Ship {
     this.lastShot = 0;
     this.create = args.create;
     this.onDie = args.onDie;
+    this.fireRate = args.fireRate ? parseInt(args.fireRate) : 300;
   }
 
   destroy() {
@@ -106,7 +107,7 @@ export default class Ship {
     if (state.keys.down) {
       this.accelerate(-0.5);
     }
-    if (state.keys.space && Date.now() - this.lastShot > 300) {
+    if (state.keys.space && Date.now() - this.lastShot > this.fireRate) {
       const bullet = new Bullet({ ship: this });
       this.create(bullet, "bullets");
       this.lastShot = Date.now();
