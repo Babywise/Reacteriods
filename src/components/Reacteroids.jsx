@@ -4,6 +4,7 @@ import Asteroid from "./Asteroid";
 import { randomNumBetweenExcluding } from "../utils/functions";
 import ColorPicker from "./ColorPicker";
 import BulletSpeedPicker from "./BulletSpeedPicker";
+import ImagePicker, { imagesList } from "./ImagePicker";
 
 const KEY = {
   LEFT: 37,
@@ -35,7 +36,7 @@ export class Reacteroids extends Component {
         down: 0,
         space: 0,
       },
-      asteroidCount: 3,
+      asteroidCount: 4,
       currentScore: 0,
       topScore: localStorage["topscore"] || 0,
       inGame: false,
@@ -60,6 +61,8 @@ export class Reacteroids extends Component {
           localStorage.getItem("selectedShipBorderColor") || "#ffffff",
         rainbowShipBorder:
           localStorage.getItem("rainbowShipBorder") === "true" ? true : false,
+        asteroidImage: localStorage.getItem("asteroidImage") || null,
+        memeMode: localStorage.getItem("memeMode") === "true" ? false : true,
       },
     };
     this.ship = [];
@@ -166,6 +169,50 @@ export class Reacteroids extends Component {
         rainbowShipBorder: isChecked,
       },
     }));
+  };
+
+  handleImageChange = (image) => {
+    const asteroidImage = image ? image : "";
+
+    localStorage.setItem("asteroidImage", asteroidImage);
+    this.setState((prevState) => ({
+      preferences: {
+        ...prevState.preferences,
+        asteroidImage: asteroidImage,
+      },
+    }));
+    this.asteroids.forEach((asteroid) => {
+      if (this.state.preferences.memeMode) {
+        asteroid.image = new Image();
+        asteroid.image.src =
+          imagesList[Math.floor(Math.random() * imagesList.length)];
+      } else if (image) {
+        asteroid.image = new Image();
+        asteroid.image.src = asteroidImage;
+      } else {
+        asteroid.image = null;
+      }
+    });
+  };
+
+  handleMemeModeToggle = (memeMode) => {
+    localStorage.setItem("memeMode", memeMode ? false : true);
+    this.setState((prevState) => ({
+      preferences: {
+        ...prevState.preferences,
+        memeMode: memeMode,
+      },
+    }));
+    this.asteroids.forEach((asteroid) => {
+      if (memeMode) {
+        asteroid.image = new Image();
+        asteroid.image.src =
+          imagesList[Math.floor(Math.random() * imagesList.length)];
+      } else {
+        asteroid.image = new Image();
+        asteroid.image.src = this.state.preferences.asteroidImage;
+      }
+    });
   };
 
   componentDidMount() {
@@ -323,6 +370,11 @@ export class Reacteroids extends Component {
         },
         create: this.createObject.bind(this),
         addScore: this.addScore.bind(this),
+        imageSrc: this.state.preferences.memeMode
+          ? imagesList[Math.floor(Math.random() * imagesList.length)]
+          : this.state.preferences.asteroidImage,
+        imageSrcOptions: imagesList,
+        memeMode: this.state.preferences.memeMode,
       });
       this.createObject(asteroid, "asteroids");
     }
@@ -456,11 +508,19 @@ export class Reacteroids extends Component {
                 />
               </div>
             </div>
-            <BulletSpeedPicker
-              onFireRateChange={(newRate) =>
-                localStorage.setItem("fireRate", newRate)
-              }
-            />
+            <div>
+              <ImagePicker
+                onSelectImage={this.handleImageChange}
+                defaultSelectedImage={this.state.preferences.asteroidImage}
+                onToggleMemeMode={this.handleMemeModeToggle}
+                defaultMemeMode={this.state.preferences.memeMode}
+              />
+              <BulletSpeedPicker
+                onFireRateChange={(newRate) =>
+                  localStorage.setItem("fireRate", newRate)
+                }
+              />
+            </div>
             <button
               className="border-4 border-white bg-transparent text-white text-m px-10 py-5 m-5 cursor-pointer hover:bg-white hover:text-black"
               onClick={() => this.setState({ menu: true, settings: false })}

@@ -17,8 +17,8 @@ export default class BulletSpeedPicker extends Component {
 
   render() {
     return (
-      <div>
-        <label className="mr-2">Bullet Speed:</label>
+      <div className="py-5">
+        <label className="mr-2 pr-2">Bullet Speed:</label>
         <input
           type="range"
           min="100"
@@ -26,7 +26,7 @@ export default class BulletSpeedPicker extends Component {
           value={this.state.fireRate}
           onChange={this.handleSliderChange}
         />
-        <span>{this.state.fireRate} ms</span>
+        <span className="ml-2">{this.state.fireRate} ms</span>
       </div>
     );
   }
