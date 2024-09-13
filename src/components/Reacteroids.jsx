@@ -47,6 +47,20 @@ export class Reacteroids extends Component {
         y: 0,
         movedRecently: false,
       },
+      preferences: {
+        selectedTrailColor:
+          localStorage.getItem("selectedTrailColor") || "#ffffff",
+        rainbowTrail:
+          localStorage.getItem("rainbowTrail") === "true" ? true : false,
+        selectedShipColor:
+          localStorage.getItem("selectedShipColor") || "#ffffff",
+        rainbowShip:
+          localStorage.getItem("rainbowShip") === "true" ? true : false,
+        selectedShipBorderColor:
+          localStorage.getItem("selectedShipBorderColor") || "#ffffff",
+        rainbowShipBorder:
+          localStorage.getItem("rainbowShipBorder") === "true" ? true : false,
+      },
     };
     this.ship = [];
     this.asteroids = [];
@@ -93,6 +107,66 @@ export class Reacteroids extends Component {
     };
     this.setState({ mousePosition });
   }
+
+  handleTrailColorChange = (color) => {
+    localStorage.setItem("selectedTrailColor", color);
+    this.setState((prevState) => ({
+      preferences: {
+        ...prevState.preferences,
+        selectedTrailColor: color,
+      },
+    }));
+  };
+
+  handleRainbowTrailToggle = (isChecked) => {
+    localStorage.setItem("rainbowTrail", isChecked ? true : false);
+    this.setState((prevState) => ({
+      preferences: {
+        ...prevState.preferences,
+        rainbowTrail: isChecked,
+      },
+    }));
+  };
+
+  handleShipColorChange = (color) => {
+    localStorage.setItem("selectedShipColor", color);
+    this.setState((prevState) => ({
+      preferences: {
+        ...prevState.preferences,
+        selectedShipColor: color,
+      },
+    }));
+  };
+
+  handleRainbowShipToggle = (isChecked) => {
+    localStorage.setItem("rainbowShip", isChecked ? true : false);
+    this.setState((prevState) => ({
+      preferences: {
+        ...prevState.preferences,
+        rainbowShip: isChecked,
+      },
+    }));
+  };
+
+  handleShipBorderColorChange = (color) => {
+    localStorage.setItem("selectedShipBorderColor", color);
+    this.setState((prevState) => ({
+      preferences: {
+        ...prevState.preferences,
+        selectedShipBorderColor: color,
+      },
+    }));
+  };
+
+  handleRainbowShipBorderToggle = (isChecked) => {
+    localStorage.setItem("rainbowShipBorder", isChecked ? true : false);
+    this.setState((prevState) => ({
+      preferences: {
+        ...prevState.preferences,
+        rainbowShipBorder: isChecked,
+      },
+    }));
+  };
 
   componentDidMount() {
     window.addEventListener("keyup", this.handleKeys.bind(this, false));
@@ -198,6 +272,11 @@ export class Reacteroids extends Component {
       },
       create: this.createObject.bind(this),
       onDie: this.gameOver.bind(this),
+      strokeStyle: this.state.preferences.selectedShipBorderColor,
+      fillStyle: this.state.preferences.selectedShipColor,
+      rainbowTrail: this.state.preferences.rainbowTrail,
+      rainbowShip: this.state.preferences.rainbowShip,
+      rainbowShipBorder: this.state.preferences.rainbowShipBorder,
       fireRate: localStorage.getItem("fireRate"),
     });
     this.createObject(ship, "ship");
@@ -327,6 +406,7 @@ export class Reacteroids extends Component {
             <p>Reacteroids</p>
             <p>Shoot the asteriods!</p>
             <p>Don't get hit!</p>
+
             <button
               className="border-4 border-white bg-transparent text-white text-m px-10 py-5 m-5 cursor-pointer hover:bg-white hover:text-black"
               onClick={() => this.setState({ menu: false, settings: true })}
@@ -346,18 +426,41 @@ export class Reacteroids extends Component {
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 p-16 z-1 text-center">
             <p>Settings</p>
             <p>Customize your game</p>
-            <div className="">
-              <ColorPicker
-                onColorChange={(color) => {
-                  localStorage["selectedTrailColor"] = color;
-                }}
-              />
-              <BulletSpeedPicker
-                onFireRateChange={(newRate) =>
-                  localStorage.setItem("fireRate", newRate)
-                }
-              />
+            <div className="flex">
+              <div>
+                <h3>Trail Color Picker</h3>
+                <ColorPicker
+                  selectedColor={this.state.preferences.selectedTrailColor}
+                  rainbow={this.state.preferences.rainbowTrail}
+                  onColorChange={this.handleTrailColorChange}
+                  onToggleRainbow={this.handleRainbowTrailToggle}
+                />
+              </div>
+              <div>
+                <h3>Ship Color Picker</h3>
+                <ColorPicker
+                  selectedColor={this.state.preferences.selectedShipColor}
+                  rainbow={this.state.preferences.rainbowShip}
+                  onColorChange={this.handleShipColorChange}
+                  onToggleRainbow={this.handleRainbowShipToggle}
+                />
+              </div>
+
+              <div>
+                <h3>Ship Border Color Picker</h3>
+                <ColorPicker
+                  selectedColor={this.state.preferences.selectedShipBorderColor}
+                  rainbow={this.state.preferences.rainbowShipBorder}
+                  onColorChange={this.handleShipBorderColorChange}
+                  onToggleRainbow={this.handleRainbowShipBorderToggle}
+                />
+              </div>
             </div>
+            <BulletSpeedPicker
+              onFireRateChange={(newRate) =>
+                localStorage.setItem("fireRate", newRate)
+              }
+            />
             <button
               className="border-4 border-white bg-transparent text-white text-m px-10 py-5 m-5 cursor-pointer hover:bg-white hover:text-black"
               onClick={() => this.setState({ menu: true, settings: false })}

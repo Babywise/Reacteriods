@@ -18,16 +18,14 @@ export default class BulletSpeedPicker extends Component {
   render() {
     return (
       <div>
-        <label>
-          Bullet Speed:
-          <input
-            type="range"
-            min="100"
-            max="1000"
-            value={this.state.fireRate}
-            onChange={this.handleSliderChange}
-          />
-        </label>
+        <label className="mr-2">Bullet Speed:</label>
+        <input
+          type="range"
+          min="100"
+          max="1000"
+          value={this.state.fireRate}
+          onChange={this.handleSliderChange}
+        />
         <span>{this.state.fireRate} ms</span>
       </div>
     );

@@ -17,6 +17,11 @@ export default class Ship {
     this.lastShot = 0;
     this.create = args.create;
     this.onDie = args.onDie;
+    this.strokeStyle = args.strokeStyle || "#ffffff";
+    this.fillStyle = args.fillStyle || "#000000";
+    this.rainbowTrail = args.rainbowTrail || false;
+    this.rainbowShip = args.rainbowShip || false;
+    this.rainbowShipBorder = args.rainbowShipBorder || false;
     this.fireRate = args.fireRate ? parseInt(args.fireRate) : 300;
   }
 
@@ -88,7 +93,7 @@ export default class Ship {
         y: posDelta.y / randomNumBetween(3, 5),
       },
       color: localStorage.getItem("selectedTrailColor"),
-      rainbow: localStorage.getItem("rainbow") === "true" ? true : false,
+      rainbow: localStorage.getItem("rainbowTrail") === "true" ? true : false,
     });
     this.create(particle, "particles");
   }
@@ -128,13 +133,36 @@ export default class Ship {
     if (this.position.y > state.screen.height) this.position.y = 0;
     else if (this.position.y < 0) this.position.y = state.screen.height;
 
+    let selectedShipColor = this.fillStyle;
+    let selectedShipBorderColor = this.strokeStyle;
+    if (this.rainbowShipBorder) {
+      const red = Math.floor((Math.sin(state.frameCount * 0.1) + 1) * 127.5);
+      const green = Math.floor(
+        (Math.sin(state.frameCount * 0.1 + 2) + 1) * 127.5
+      );
+      const blue = Math.floor(
+        (Math.sin(state.frameCount * 0.1 + 4) + 1) * 127.5
+      );
+      selectedShipBorderColor = `rgb(${red}, ${green}, ${blue})`;
+    }
+    if (this.rainbowShip) {
+      const red = Math.floor((Math.sin(state.frameCount * 0.1) + 1) * 127.5);
+      const green = Math.floor(
+        (Math.sin(state.frameCount * 0.1 + 2) + 1) * 127.5
+      );
+      const blue = Math.floor(
+        (Math.sin(state.frameCount * 0.1 + 4) + 1) * 127.5
+      );
+      selectedShipColor = `rgb(${red}, ${green}, ${blue})`;
+    }
+
     // Draw
     const context = state.context;
     context.save();
     context.translate(this.position.x, this.position.y);
     context.rotate((this.rotation * Math.PI) / 180);
-    context.strokeStyle = "#ffffff";
-    context.fillStyle = "#000000";
+    context.strokeStyle = selectedShipBorderColor;
+    context.fillStyle = selectedShipColor;
     context.lineWidth = 2;
     context.beginPath();
     context.moveTo(0, -15);
